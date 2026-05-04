@@ -1,0 +1,15 @@
+default: hyperliquid_testnet
+providers:
+  hyperliquid_testnet:
+    type: hyperliquid
+    credentials:
+      trader_id: ${ASTRAQUANT_TRADER_ID}
+      session_id: ${ASTRAQUANT_SESSION_ID}
+      provider: hyperliquid
+    main_address: ${HYPERLIQUID_MAIN_ADDRESS}
+    testnet: true
+    timeout: 30s
+    vault_address: ${HYPERLIQUID_VAULT_ADDRESS}
+
+  paper_trading:
+    type: sim

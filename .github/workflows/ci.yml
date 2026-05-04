@@ -121,3 +121,40 @@ jobs:
 
       - name: Run migration up/down smoke
         run: make test-migration-smoke
+
+  production-preflight-smoke:
+    name: Production preflight smoke
+    runs-on: ubuntu-latest
+    needs:
+      - secret-scan
+    defaults:
+      run:
+        working-directory: go
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go/go.mod
+          cache-dependency-path: go/go.sum
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run production preflight smoke
+        env:
+          CGO_ENABLED: "0"
+          ENV: prod
+          ZENMUX_API_KEY: "preflight-test-key"
+          Postgres__DataSource: "postgres://nof0:secret@db.example.com:5432/nof0?sslmode=require&default_query_exec_mode=simple_protocol"
+          Cache__0__Host: "redis.example.com:6379"
+          Cache__0__Pass: "redis-secret"
+          Cache__0__User: "default"
+          ASTRAQUANT_CORS_ORIGIN: "https://app.example.com"
+          ASTRAQUANT_TRADER_ID: "prod_testnet_trader"
+          ASTRAQUANT_SESSION_ID: "prod_session"
+          ASTRAQUANT_SECRET_PROD_TESTNET_TRADER_PROD_SESSION_HYPERLIQUID_PRIVATE_KEY: "0000000000000000000000000000000000000000000000000000000000000001"
+          HYPERLIQUID_MAIN_ADDRESS: "0x1b673761f69Ff78C9C8aDCA4c351574dc873105E"
+        run: go run cmd/preflight/main.go -f etc/nof0.prod.yaml -profile trading -format json

@@ -421,6 +421,30 @@ go test ./... -cover      # 测试+覆盖率
 
 ## 部署
 
+### Production preflight
+
+Before using a production trading config, run the hard readiness gate:
+
+```bash
+make preflight CONFIG_FILE=etc/nof0.prod.yaml
+```
+
+See [Production Preflight](docs/production-preflight.md) for the required
+Postgres, Redis, LLM, exchange, command worker, and risk-control checks.
+
+Production template files:
+
+- `etc/nof0.prod.yaml`
+- `etc/manager.prod.yaml`
+- `etc/exchange.prod.yaml`
+- `etc/market.prod.yaml`
+- `etc/executor.prod.yaml`
+- `etc/env.production.example`
+
+The Docker image now uses `start.sh` as its entrypoint. When `ENV=prod` or a
+`*.prod.yaml` config is selected, the script runs the same preflight gate
+before launching the API binary.
+
 <table>
 <tr>
 <td width="50%">

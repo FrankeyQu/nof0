@@ -1,0 +1,8 @@
+default: hyperliquid_testnet
+providers:
+  hyperliquid_testnet:
+    type: hyperliquid
+    testnet: true
+    timeout: 8s
+    http_timeout: 10s
+    max_retries: 3

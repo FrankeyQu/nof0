@@ -1,0 +1,65 @@
+Name: nof0
+Env: prod
+Host: 0.0.0.0
+Port: 8888
+DataPath: ../mcp/data
+
+Postgres:
+  # Required for production. Example:
+  # postgres://nof0:${DB_PASSWORD}@db.example.com:5432/nof0?sslmode=require&default_query_exec_mode=simple_protocol
+  DataSource: "${Postgres__DataSource}"
+  MaxOpen: 25
+  MaxIdle: 10
+  MaxLifetime: 5m
+
+Cache:
+  - Host: "${Cache__0__Host}"
+    Type: node
+    Pass: "${Cache__0__Pass}"
+    Tls: true
+    User: "${Cache__0__User}"
+    Weight: 100
+
+TTL:
+  Short: 10
+  Medium: 60
+  Long: 300
+
+Logging:
+  SlowThreshold:
+    SQL: 1000
+    Redis: 500
+  VerboseSQL: false
+  VerboseLLM: false
+
+# Required for API-process execution of queued manual approvals.
+# If the API is deployed read-only, run preflight with -profile api instead.
+CommandWorker:
+  Enabled: true
+  Interval: 5s
+  BatchSize: 10
+
+LLM:
+  File: llm.yaml
+
+Executor:
+  File: executor.prod.yaml
+
+Manager:
+  File: manager.prod.yaml
+
+Exchange:
+  File: exchange.prod.yaml
+
+Market:
+  File: market.prod.yaml
+
+# This config is intentionally not wired into the API server yet.
+# Keep it restrictive so a future CORS middleware cannot inherit '*'.
+Cors:
+  AllowOrigins: ["${ASTRAQUANT_CORS_ORIGIN}"]
+  AllowMethods: ["GET", "POST", "OPTIONS"]
+  AllowHeaders: ["Content-Type", "Authorization"]
+  ExposeHeaders: ["Content-Length"]
+  AllowCredentials: false
+  MaxAge: 3600

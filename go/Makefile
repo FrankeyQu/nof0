@@ -4,7 +4,7 @@
 	migrate-up migrate-down migrate-create migrate-status migrate-force model-gen \
 	test test-ci test-migration-smoke test-unit test-integration test-all test-bench test-cover test-race test-storage \
 	run-llm run-llm-fast \
-	lint fmt check check-all install
+	preflight lint fmt check check-all install
 
 # =============================================================================
 # Variables
@@ -15,6 +15,7 @@ BUILD_DIR=bin
 TEST_SCRIPT=scripts/run_tests.py
 LOCAL_POSTGRES_DSN=postgres://nof0:nof0@localhost:5432/nof0?sslmode=disable
 DOCKER_COMPOSE ?= docker compose
+PREFLIGHT_PROFILE ?= trading
 
 # =============================================================================
 # Help and Documentation
@@ -41,6 +42,9 @@ run-llm: ## Run LLM trading manager with default settings
 
 run-llm-fast: ## Run LLM trading manager with fast executor profile
 	go run cmd/llm/main.go --executor-prompt-profile fast --equity 100 --symbols BTC,ETH --paper-trading
+
+preflight: ## Run production readiness preflight gate
+	go run cmd/preflight/main.go -f $(CONFIG_FILE) -profile $(PREFLIGHT_PROFILE)
 
 # =============================================================================
 # Build Commands
